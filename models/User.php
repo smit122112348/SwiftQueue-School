@@ -1,4 +1,5 @@
 <?php
+session_start();
 
 class User{
     private $conn;
@@ -21,7 +22,17 @@ class User{
         return $this->user_type;
     }
 
-    public function comparePassword($password){
-        return password_verify($password, $this->user_password);
+    public function login($email, $password) {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE user_email = :email LIMIT 0,1";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':email', $email);
+        $stmt->execute();
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($user && (crypt($password, $user['user_password']) === $user['user_password'])) {
+            return $user;
+        } else {
+            return false;
+        }
     }
 }

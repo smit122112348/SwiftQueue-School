@@ -3,11 +3,11 @@
 $username = "smit";
 $password = "smit";
 $server = 'localhost:3309';
-$db = 'SwiftQueueDB';
+$dbname = 'SwiftQueueDB';
 
+try {
     // Create connection
-    $conn = new PDO("mysql:host=$server;dbname=$db", $username, $password);
-
+    $conn = new PDO("mysql:host=$server;dbname=$dbname", $username, $password);
     // set the PDO error mode to exception
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
@@ -17,8 +17,8 @@ $db = 'SwiftQueueDB';
         user_full_name VARCHAR(50) NOT NULL,
         user_email VARCHAR(50) NOT NULL UNIQUE,
         user_password VARCHAR(50) NOT NULL,
-        user_type ENUM('admin', 'teacher') Default 'teacher'
-        )";
+        user_type ENUM('admin', 'teacher') DEFAULT 'teacher'
+    )";
     $conn->exec($sql);
 
     // Code to create table "courses" if it does not exist
@@ -29,22 +29,39 @@ $db = 'SwiftQueueDB';
         course_startDate DATETIME NOT NULL,
         course_endDate DATETIME NOT NULL,
         course_status ENUM('Active', 'Inactive') DEFAULT 'Inactive'
-        )";
-    $conn->exec($sql);        
+    )";
+    $conn->exec($sql);
 
     // Code to add initial data to the table "users"
-    $password = password_hash('admin', PASSWORD_DEFAULT);
-    $sql = "INSERT INTO users (user_email, user_password, user_type) 
+    // Check if the table is empty, if empty add the initial data
+        $stmt = $conn->query("SELECT COUNT(*) FROM users");
+        $count = $stmt->fetchColumn();
+        if ($count > 0) {
+            return $conn;
+        }
+        else{
+                $password = crypt('admin', 'some_salt');
+    $sql = "INSERT INTO users (user_full_name, user_email, user_password, user_type) 
             VALUES ('John Doe','admin@admin.com', '$password', 'admin')";
     $conn->exec($sql);
 
-    $password = password_hash('teacher', PASSWORD_DEFAULT);
-    $sql = "INSERT INTO users (user_email, user_password, user_type)
+    $password = crypt('teacher', 'some_salt');
+    $sql = "INSERT INTO users (user_full_name, user_email, user_password, user_type)
             VALUES ('Alice White','123@gmail.com', '$password', 'teacher')";
     $conn->exec($sql);
+        }
+
+    
 
     // Code to add initial data to the table "courses"
-    $sql = "INSERT INTO courses (course_name, course_description, course_startDate, course_endDate, course_status)
+    // Check if the table is empty, if empty add the initial data
+        $stmt = $conn->query("SELECT COUNT(*) FROM courses");
+        $count = $stmt->fetchColumn();
+        if ($count > 0) {
+            return $conn;
+        }
+        else{
+                $sql = "INSERT INTO courses (course_name, course_description, course_startDate, course_endDate, course_status)
             VALUES ('Object Oriented Programming', null, '2021-01-01 00:00:00', '2025-01-01 00:00:00', 'Active')";
     $conn->exec($sql);
 
@@ -55,5 +72,12 @@ $db = 'SwiftQueueDB';
     $sql = "INSERT INTO courses (course_name, course_description, course_startDate, course_endDate, course_status)
             VALUES ('PHP', null, '2021-01-01 00:00:00', '2024-01-01 00:00:00', 'Active')";
     $conn->exec($sql);
+        }
 
+    // Return the connection for further use
+    return $conn;
+} catch (PDOException $e) {
+    echo "Connection failed: " . $e->getMessage();
+    return null;
+}
 ?>
