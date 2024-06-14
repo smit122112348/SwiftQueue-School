@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>404</title>
+    <title>Swiftqueue School</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>

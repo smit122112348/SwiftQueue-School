@@ -18,11 +18,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Home</title>
+    <title>Swiftqueue School</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const logoutButton = document.getElementById('logout-btn');
+            const newCourseButton = document.getElementById('new-course-btn');
             logoutButton.addEventListener('click', function() {
                 fetch('/logout', {
                     method: 'POST'
@@ -38,6 +39,10 @@
                     console.error('Error:', error);
                 });
             });
+
+            newCourseButton.addEventListener('click', function() {
+                window.location.href = '/newCourse';
+            });
         });
     </script>
 </head>
@@ -51,7 +56,10 @@
                             <div class='flex justify-end'>
                                 <button id='logout-btn' class='bg-red-500 text-white p-2 rounded-md'>Logout</a>
                             </div>    
-                            <h2 class='text-2xl font-bold my-5'>Courses:</h2>
+                            <div class='flex justify-between items-center'>
+                                <h2 class='text-2xl font-bold my-5'>Courses:</h2>
+                                <button id='new-course-btn' class='bg-green-500 text-white p-2 rounded-md h-fit'>Add New Course</a>
+                            </div>
                             <div class='flex flex-col items-center justify-center gap-5'>";
                     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                         echo "<div class='w-full bg-slate-300 rounded-md p-5 shadow-md'>" . 

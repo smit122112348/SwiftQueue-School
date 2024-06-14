@@ -3,11 +3,13 @@
     $routes = [
         'GET' => [
             '/' => './views/home.php',
-            '/login' => './views/login.php'
+            '/login' => './views/login.php',
+            '/newCourse' => './views/newCourse.php',
         ],
         'POST' => [
             '/login' => './controllers/UserController.php',
             '/logout' => './controllers/UserController.php',
+            '/newCourse' => './controllers/CourseController.php',
         ],
         'PUT' => [
             '/data' => 'data_put.php'

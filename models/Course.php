@@ -34,5 +34,24 @@ class Course{
         $stmt->execute();
         return $stmt;
     }
+
+    public function addCourse($name, $status, $description, $startDate, $startTime, $endDate, $endTime) {
+        $sql = "INSERT INTO $this->table_name (course_name, course_description, course_status, course_startDate, course_endDate) VALUES (:name, :description, :status, :startDate, :endDate)";
+        $stmt = $this->conn->prepare($sql);
+    
+        $startDateTime = $startDate . ' ' . $startTime;
+        $endDateTime = $endDate . ' ' . $endTime;
+        $descriptionValue = $description ? $description : null;
+    
+        $stmt->bindParam(':name', $name);
+        $stmt->bindParam(':description', $descriptionValue);
+        $stmt->bindParam(':status', $status);
+        $stmt->bindParam(':startDate', $startDateTime);
+        $stmt->bindParam(':endDate', $endDateTime);
+    
+        return $stmt->execute();
+    }
+    
+    
 }
 
