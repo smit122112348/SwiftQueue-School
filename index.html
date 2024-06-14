@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Run PHP from HTML</title>
+    <!-- Include jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <h1>Run db.php from index.html</h1>
+    <button id="run-script">Run PHP Script</button>
+
+    <div id="result"></div>
+
+    <script>
+        $(document).ready(function(){
+            $('#run-script').click(function(){
+                $.ajax({
+                    url: 'db.php',
+                    type: 'GET',
+                    success: function(response) {
+                        // Update the div with the result from db.php
+                        $('#result').html(response);
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle errors
+                        $('#result').html('An error occurred: ' + error);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
