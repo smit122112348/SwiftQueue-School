@@ -20,12 +20,7 @@ class Course{
         $stmt->bindParam(':id', $id);
         $stmt->execute();
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        $this->course_id = $row['course_id'];
-        $this->course_name = $row['course_name'];
-        $this->course_description = $row['course_description'];
-        $this->course_startDate = $row['course_startDate'];
-        $this->course_endDate = $row['course_endDate'];
-        $this->course_status = $row['course_status'];
+        return $row;
     }
 
     public function getAllCourses(){
@@ -43,6 +38,24 @@ class Course{
         $endDateTime = $endDate . ' ' . $endTime;
         $descriptionValue = $description ? $description : null;
     
+        $stmt->bindParam(':name', $name);
+        $stmt->bindParam(':description', $descriptionValue);
+        $stmt->bindParam(':status', $status);
+        $stmt->bindParam(':startDate', $startDateTime);
+        $stmt->bindParam(':endDate', $endDateTime);
+    
+        return $stmt->execute();
+    }
+
+    public function editCourse($id, $name, $status, $description, $startDate, $startTime, $endDate, $endTime) {
+        $sql = "UPDATE $this->table_name SET course_name = :name, course_description = :description, course_status = :status, course_startDate = :startDate, course_endDate = :endDate WHERE course_id = :id";
+        $stmt = $this->conn->prepare($sql);
+    
+        $startDateTime = $startDate . ' ' . $startTime;
+        $endDateTime = $endDate . ' ' . $endTime;
+        $descriptionValue = $description ? $description : null;
+    
+        $stmt->bindParam(':id', $id);
         $stmt->bindParam(':name', $name);
         $stmt->bindParam(':description', $descriptionValue);
         $stmt->bindParam(':status', $status);

@@ -1,10 +1,10 @@
 <?php
-    // Define the routes and their corresponding files for each request method
     $routes = [
         'GET' => [
             '/' => './views/home.php',
             '/login' => './views/login.php',
             '/newCourse' => './views/newCourse.php',
+            '/editCourse' => './views/editCourse.php',
         ],
         'POST' => [
             '/login' => './controllers/UserController.php',
@@ -12,7 +12,7 @@
             '/newCourse' => './controllers/CourseController.php',
         ],
         'PUT' => [
-            '/data' => 'data_put.php'
+            '/editCourse' => './controllers/CourseController.php',
         ],
         'DELETE' => [
             '/deleteCourse' => './controllers/CourseController.php'
@@ -21,6 +21,9 @@
     
     // Get the request method and path
     $requestMethod = $_SERVER['REQUEST_METHOD'];
+    if ($requestMethod === 'POST' && isset($_POST['_method'])) {
+        $requestMethod = $_POST['_method'];
+    }
     $requestPath = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     
     // Check if the route exists for the given request method

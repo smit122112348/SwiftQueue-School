@@ -48,6 +48,29 @@ class CourseController {
             }
         }
     }
+    
+    public function editCourse() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $courseId = $_POST['course-id'];
+            $courseName = $_POST['course-name'];
+            $courseDescription = $_POST['course-description'];
+            $courseStatus = $_POST['course-status'];
+            $courseStartDate = $_POST['course-start-date'];
+            $courseStartTime = $_POST['course-start-time'];
+            $courseEndDate = $_POST['course-end-date'];
+            $courseEndTime = $_POST['course-end-time'];
+
+            $course = $this->course->editCourse($courseId, $courseName, $courseStatus, $courseDescription, $courseStartDate, $courseStartTime, $courseEndDate, $courseEndTime);
+
+            if ($course) {
+                header("Location: /");
+                exit();
+            } else {
+                header("Location: /editCourse?error=Failed to edit course");
+                exit();
+            }
+        }
+    }
 }
 
 $conn = require dirname(__DIR__) . '/db.php';
@@ -58,4 +81,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && strpos($_SERVER['REQUEST_URI'], 'new
     $controller->addCourse();
 } else if ($_SERVER['REQUEST_METHOD'] == 'DELETE' && strpos($_SERVER['REQUEST_URI'], 'deleteCourse') !== false) {
     $controller->deleteCourse();
+} else if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['_method']) && $_POST['_method'] === 'PUT') {
+    $controller->editCourse();
 }

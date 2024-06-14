@@ -45,6 +45,11 @@
             }
         }
 
+        function handleEdit(event, courseId) {
+            event.preventDefault();
+            window.location.href = `/editCourse?courseId=${courseId}`;
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
             const logoutButton = document.getElementById('logout-btn');
             const newCourseButton = document.getElementById('new-course-btn');
@@ -99,7 +104,7 @@
                                 "<div class='flex flex-1 justify-between'>" .
                                 "<p class='font-bold " . ($row['course_status'] === "Active" ? "text-green-500" : "text-red-500") . "'>" . htmlspecialchars($row['course_status']) . "</p>".
                                 "<div class='flex flex-col gap-1 items-end'>".
-                                    "<button class='bg-yellow-500 text-white p-2 rounded-md w-fit shadow-md'>Edit</button>" .
+                                    "<button class='bg-yellow-500 text-white p-2 rounded-md w-fit shadow-md' onclick='handleEdit(event, " . $row['course_id'] . " )'>Edit</button>" .
                                     "<button class='bg-red-500 text-white p-2 rounded-md mt-2 w-fit shadow-md' onclick='handleDelete(event, " . $row['course_id'] . ", \"" . addslashes($row['course_name']) . "\")'>Delete</button>" .
                                 "</div>".
                                 "</div>".

@@ -28,7 +28,8 @@
     <div class="container mx-auto flex flex-col justify-center items-center gap-5">
         <h1 class="text-4xl font-bold text-center mt-10">Swiftqueue School</h1>
         <div class="w-2/3 p-5 bg-slate-200 rounded-md shadow-lg">
-            <div class="flex justify-end">
+            <div class="flex justify-between">
+                <a href="/" class="bg-blue-500 text-white p-2 rounded-md">Home</a>
                 <button id="logout-btn" class="bg-red-500 text-white p-2 rounded-md">Logout</button>
             </div>
             <h2 class="text-2xl font-bold my-5">Add New Course</h2>
