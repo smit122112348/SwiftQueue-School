@@ -15,7 +15,7 @@
             '/data' => 'data_put.php'
         ],
         'DELETE' => [
-            '/data' => 'data_delete.php'
+            '/deleteCourse' => './controllers/CourseController.php'
         ]
     ];
     

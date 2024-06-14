@@ -31,6 +31,23 @@ class CourseController {
             }
         }
     }
+
+    public function deleteCourse() {
+        if ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $courseId = $data['courseId'];
+
+            $course = $this->course->deleteCourse($courseId);
+
+            if ($course) {
+                http_response_code(204);
+                exit();
+            } else {
+                http_response_code(500);
+                exit();
+            }
+        }
+    }
 }
 
 $conn = require dirname(__DIR__) . '/db.php';
@@ -39,4 +56,6 @@ $controller = new CourseController($conn);
 // Determine which function to call based on the request
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && strpos($_SERVER['REQUEST_URI'], 'newCourse') !== false) {
     $controller->addCourse();
+} else if ($_SERVER['REQUEST_METHOD'] == 'DELETE' && strpos($_SERVER['REQUEST_URI'], 'deleteCourse') !== false) {
+    $controller->deleteCourse();
 }

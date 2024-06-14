@@ -52,6 +52,12 @@ class Course{
         return $stmt->execute();
     }
     
+    public function deleteCourse($id) {
+        $sql = "DELETE FROM $this->table_name WHERE course_id = :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':id', $id);
+        return $stmt->execute();
+    }
     
 }
 
