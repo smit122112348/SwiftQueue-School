@@ -37,6 +37,31 @@ class UserController {
             exit();
         }
     }
+
+    public function register() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $fullName = $_POST['full-name'];
+            $email = $_POST['email'];
+            $password = $_POST['password'];
+            $confirmPassword = $_POST['confirm-password'];
+
+            if ($password != $confirmPassword) {
+                header("Location: /register?error=Passwords do not match");
+                exit();
+            }
+
+            $user = $this->user->register($fullName, $email, $password);
+
+            if ($user) {
+                $_SESSION['user'] = $user;
+                header("Location: /");
+                exit();
+            } else {
+                header("Location: /register?error=Email already exists");
+                exit();
+            }
+        }
+    }
 }
 
 $conn = require dirname(__DIR__) . '/db.php';
@@ -47,5 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && strpos($_SERVER['REQUEST_URI'], 'log
     $controller->login();
 } elseif ($_SERVER['REQUEST_METHOD'] == 'POST' && strpos($_SERVER['REQUEST_URI'], 'logout') !== false) {
     $controller->logout();
+} else if ($_SERVER['REQUEST_METHOD'] == 'POST' && strpos($_SERVER['REQUEST_URI'], 'register') !== false) {
+    $controller->register();
 }
 ?>

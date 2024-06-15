@@ -17,7 +17,7 @@ try {
         user_full_name VARCHAR(50) NOT NULL,
         user_email VARCHAR(50) NOT NULL UNIQUE,
         user_password VARCHAR(50) NOT NULL,
-        user_type ENUM('admin', 'teacher') DEFAULT 'teacher'
+        user_type ENUM('admin', 'basic') DEFAULT 'basic'
     )";
     $conn->exec($sql);
 
@@ -40,14 +40,14 @@ try {
             return $conn;
         }
         else{
-                $password = crypt('admin', 'some_salt');
+                $password = crypt('admin', 'some_salt_30');
     $sql = "INSERT INTO users (user_full_name, user_email, user_password, user_type) 
             VALUES ('John Doe','admin@admin.com', '$password', 'admin')";
     $conn->exec($sql);
 
-    $password = crypt('teacher', 'some_salt');
+    $password = crypt('teacher', 'some_salt_30');
     $sql = "INSERT INTO users (user_full_name, user_email, user_password, user_type)
-            VALUES ('Alice White','123@gmail.com', '$password', 'teacher')";
+            VALUES ('Alice White','123@gmail.com', '$password', 'basic')";
     $conn->exec($sql);
         }
 

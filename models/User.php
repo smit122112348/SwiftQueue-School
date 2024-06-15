@@ -35,4 +35,31 @@ class User{
             return false;
         }
     }
+
+    public function register($full_name, $email, $password) {
+        $query = "SELECT * FROM " . $this->table_name . " WHERE user_email = :email";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':email', $email);
+        $stmt->execute();
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($user) {
+            return false;
+        }
+
+        $query = "INSERT INTO " . $this->table_name . " (user_full_name, user_email, user_password) VALUES (:full_name, :email, :password)";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':full_name', $full_name);
+        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':password', crypt($password, 'some_salt_30'));
+        $stmt->execute();
+
+        $query = "SELECT * FROM " . $this->table_name . " WHERE user_email = :email LIMIT 0,1";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':email', $email);
+        $stmt->execute();
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $user;
+    }
 }

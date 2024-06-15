@@ -3,6 +3,7 @@
         'GET' => [
             '/' => './views/home.php',
             '/login' => './views/login.php',
+            '/register' => './views/register.php',
             '/newCourse' => './views/newCourse.php',
             '/editCourse' => './views/editCourse.php',
         ],
@@ -10,6 +11,7 @@
             '/login' => './controllers/UserController.php',
             '/logout' => './controllers/UserController.php',
             '/newCourse' => './controllers/CourseController.php',
+            '/register' => './controllers/UserController.php',
         ],
         'PUT' => [
             '/editCourse' => './controllers/CourseController.php',
