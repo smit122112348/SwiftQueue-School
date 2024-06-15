@@ -1,5 +1,5 @@
 <?php
-session_start();
+// session_start();
 
 class User{
     private $conn;
@@ -20,6 +20,14 @@ class User{
 
     public function getUserType(){
         return $this->user_type;
+    }
+
+    public function getAllUsers(){
+        $query = "SELECT * FROM " . $this->table_name;
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $users;
     }
 
     public function login($email, $password) {
@@ -61,5 +69,38 @@ class User{
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         return $user;
+    }
+
+    public function deleteAccount($user_id) {
+        $query = "DELETE FROM " . $this->table_name . " WHERE user_id = :user_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':user_id', $user_id);
+        $ans = $stmt->execute();
+        return $ans;
+    }
+
+    public function makeAdmin($id) {
+
+        $query = "UPDATE " . $this->table_name . " SET user_type = 'admin' WHERE user_id = :user_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':user_id', $id);
+        $ans = $stmt->execute();
+        return $ans;
+    }
+
+    public function blockUser($id, $type) {
+        // if user-type is blocked, then update it to basic
+        // if user-type is basic, then update it to blocked
+        
+        if ($type === 'blocked') {
+            $query = "UPDATE " . $this->table_name . " SET user_type = 'basic' WHERE user_id = :user_id";
+        } else {
+            $query = "UPDATE " . $this->table_name . " SET user_type = 'blocked' WHERE user_id = :user_id";
+        }
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':user_id', $id);
+        $ans = $stmt->execute();
+        return $ans;
     }
 }

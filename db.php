@@ -17,7 +17,7 @@ try {
         user_full_name VARCHAR(50) NOT NULL,
         user_email VARCHAR(50) NOT NULL UNIQUE,
         user_password VARCHAR(50) NOT NULL,
-        user_type ENUM('admin', 'basic') DEFAULT 'basic'
+        user_type ENUM('admin', 'basic', 'blocked') DEFAULT 'basic'
     )";
     $conn->exec($sql);
 
@@ -28,7 +28,9 @@ try {
         course_description TEXT,
         course_startDate DATETIME NOT NULL,
         course_endDate DATETIME NOT NULL,
-        course_status ENUM('Active', 'Inactive') DEFAULT 'Inactive'
+        course_status ENUM('Active', 'Inactive') DEFAULT 'Inactive',
+        user_id INT(6) UNSIGNED,
+        FOREIGN KEY (user_id) REFERENCES users(user_id)
     )";
     $conn->exec($sql);
 

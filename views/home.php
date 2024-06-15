@@ -53,6 +53,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             const logoutButton = document.getElementById('logout-btn');
             const newCourseButton = document.getElementById('new-course-btn');
+            const userDetail = document.getElementById('user-detail-btn');
             logoutButton.addEventListener('click', function(e) {
                 e.preventDefault();
                 fetch('/logout', {
@@ -73,6 +74,11 @@
             newCourseButton.addEventListener('click', function(e) {
                 e.preventDefault();
                 window.location.href = '/newCourse';
+            });
+
+            userDetail.addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = '/userDetails';
             });
         });
 
@@ -121,7 +127,8 @@
             if ($conn) {
                 if($stmt->rowCount() > 0) {
                     echo "<div class='w-2/3 p-5 bg-slate-200 rounded-md shadow-lg'>
-                            <div class='flex gap-5 justify-end'>
+                            <div class='flex gap-5 justify-between'>
+                                <button id='user-detail-btn' class='bg-blue-500 text-white p-2 rounded-md shadow-md'>Welcome, " . $_SESSION['user']['user_full_name'] . "</button>
                                 <button id='logout-btn' class='bg-red-500 text-white p-2 rounded-md shadow-md'>Logout</button>
                             </div>    
                             <div class='flex justify-between items-center'>

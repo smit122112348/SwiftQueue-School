@@ -18,6 +18,10 @@ class UserController {
             $user = $this->user->login($email, $password);
 
             if ($user) {
+                if ($user['user_type'] == 'blocked') {
+                    header("Location: /login?error=Account is blocked");
+                    exit();
+                }
                 $_SESSION['user'] = $user;
                 header("Location: /");
                 exit();
@@ -62,6 +66,86 @@ class UserController {
             }
         }
     }
+
+    public function deleteAccount() {
+        if ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
+            session_start();
+            $user = $_SESSION['user'];
+            $userId = $user['user_id'];
+
+            $result = $this->user->deleteAccount($userId);
+
+            if ($result) {
+                session_unset();
+                session_destroy();
+                header("Location: /login");
+                exit();
+            } else {
+                header("Location: /userDetails?error=Delete account failed");
+                exit();
+            }
+        }
+    }
+
+    public function makeAdmin() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            session_start();
+            
+            // Decode JSON payload
+            $data = json_decode(file_get_contents('php://input'), true);
+            
+            // Check if userId is set in the decoded data
+            if (isset($data['userId'])) {
+                
+                $userId = $data['userId'];
+                                
+                $result = $this->user->makeAdmin($userId);
+    
+                if ($result) {
+                    $_SESSION['user']['user_type'] = 'admin';
+                    header("Location: /userDetails");
+                    exit();
+                } else {
+                    header("Location: /userDetails?error=Make admin failed");
+                    exit();
+                }
+            } else {
+                // Handle the case where userId is not set in the request
+                header("Location: /userDetails?error=User ID not provided");
+                exit();
+            }
+        }
+    }
+
+    public function blockUser() {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            session_start();
+            
+            // Decode JSON payload
+            $data = json_decode(file_get_contents('php://input'), true);
+            
+            // Check if userId is set in the decoded data
+            if (isset($data['userId'])) {
+                
+                $userId = $data['userId'];
+                $userType = $data['userType'];
+                $result = $this->user->blockUser($userId, $userType);
+    
+                if ($result) {
+                    header("Location: /userDetails");
+                    exit();
+                } else {
+                    header("Location: /userDetails?error=Block user failed");
+                    exit();
+                }
+            } else {
+                // Handle the case where userId is not set in the request
+                header("Location: /userDetails?error=User ID not provided");
+                exit();
+            }
+        }
+    }
+    
 }
 
 $conn = require dirname(__DIR__) . '/db.php';
@@ -74,5 +158,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && strpos($_SERVER['REQUEST_URI'], 'log
     $controller->logout();
 } else if ($_SERVER['REQUEST_METHOD'] == 'POST' && strpos($_SERVER['REQUEST_URI'], 'register') !== false) {
     $controller->register();
+} else if ($_SERVER['REQUEST_METHOD'] == 'DELETE' && strpos($_SERVER['REQUEST_URI'], 'deleteAccount') !== false) {
+    $controller->deleteAccount();
+} else if ($_SERVER['REQUEST_METHOD'] == 'POST' && strpos($_SERVER['REQUEST_URI'], 'makeAdmin') !== false) {
+    $controller->makeAdmin();
+} else if ($_SERVER['REQUEST_METHOD'] == 'POST' && strpos($_SERVER['REQUEST_URI'], 'blockUser') !== false) {
+    $controller->blockUser();
 }
 ?>

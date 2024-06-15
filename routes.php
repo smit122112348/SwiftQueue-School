@@ -6,18 +6,22 @@
             '/register' => './views/register.php',
             '/newCourse' => './views/newCourse.php',
             '/editCourse' => './views/editCourse.php',
+            '/userDetails' => './views/userDetails.php',
         ],
         'POST' => [
             '/login' => './controllers/UserController.php',
             '/logout' => './controllers/UserController.php',
             '/newCourse' => './controllers/CourseController.php',
             '/register' => './controllers/UserController.php',
+            '/makeAdmin' => './controllers/UserController.php',
+            '/blockUser' => './controllers/UserController.php',
         ],
         'PUT' => [
             '/editCourse' => './controllers/CourseController.php',
         ],
         'DELETE' => [
-            '/deleteCourse' => './controllers/CourseController.php'
+            '/deleteCourse' => './controllers/CourseController.php',
+            '/deleteAccount' => './controllers/UserController.php',
         ]
     ];
     
