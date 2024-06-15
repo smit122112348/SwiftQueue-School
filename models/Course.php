@@ -3,12 +3,6 @@
 class Course{
     private $conn;
     private $table_name = "courses";
-    private $course_id;
-    private $course_name;
-    private $course_description;
-    private $course_startDate;
-    private $course_endDate;
-    private $course_status;
     
     public function __construct($db){
         $this->conn = $db;

@@ -4,6 +4,7 @@
         header("Location: /login");
         exit();
     }
+
     require_once 'db.php';
     require_once 'models/User.php';
 
@@ -13,19 +14,36 @@
         $userObj = new User($conn);
         $users = $userObj->getAllUsers();
     }
+
+    // Generate CSRF token if not set
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+
+    $csrf_token = $_SESSION['csrf_token'];
+
+    // Function to generate CSRF token input field
+    function csrfInput() {
+        return '<input type="hidden" name="csrf_token" value="' . $_SESSION['csrf_token'] . '">';
+    }
+
 ?>
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="csrf-token" content="<?= htmlspecialchars($csrf_token) ?>">
     <title>Swiftqueue School</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         function handleMakeAdmin(event, userId) {
             event.preventDefault();
+
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             fetch('/makeAdmin', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken // Add CSRF token to headers
                 },
                 body: JSON.stringify({ userId: userId })
             })
@@ -43,10 +61,13 @@
 
         function handleBlockUser(event, userId, userType) {
             event.preventDefault();
+
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             fetch('/blockUser', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': csrfToken // Add CSRF token to headers
                 },
                 body: JSON.stringify({ userId: userId, userType: userType})
             })
@@ -67,8 +88,13 @@
             const deleteAccountButton = document.getElementById('delete-account-btn');
             logoutButton.addEventListener('click', function(e) {
                 e.preventDefault();
+
                 fetch('/logout', {
-                    method: 'POST'
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': '<?php echo $csrf_token ?>'
+                    }
                 })
                 .then(response => {
                     if (response.ok) {
@@ -86,7 +112,11 @@
                 e.preventDefault();
                 if (confirm('Are you sure you want to delete your account?')) {
                     fetch('/deleteAccount', {
-                        method: 'DELETE'
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
                     })
                     .then(response => {
                         if (response.ok) {
@@ -104,6 +134,7 @@
 
 
     </script>
+
 </head>
 <body>
     <div class="container mx-auto flex flex-col justify-center items-center gap-5">

@@ -4,11 +4,25 @@
         header("Location: /");
         exit();
     }
+
+    // Generate CSRF token if not set
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+
+    $csrf_token = $_SESSION['csrf_token'];
+
+    // Function to generate CSRF token input field
+    function csrfInput() {
+        return '<input type="hidden" name="csrf_token" value="' . $_SESSION['csrf_token'] . '">';
+    }
+    
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="csrf-token" content="<?= htmlspecialchars($csrf_token) ?>">
     <title>Swiftqueue School</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
@@ -21,6 +35,7 @@
                 <p>Don't have an account? <a href="/register" class="text-blue-500">Register</a></p>
             </div>
             <form action="/login" method="POST" class="flex flex-col gap-5">
+                <?php echo csrfInput(); ?>
                 <input type="email" name="user_email" placeholder="Email" class="p-2 rounded-md" required>
                 <input type="password" name="user_password" placeholder="Password" class="p-2 rounded-md" required>
                 <button type="submit" class="bg-blue-500 text-white p-2 rounded-md">Login</button>

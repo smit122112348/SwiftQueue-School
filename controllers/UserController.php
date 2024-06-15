@@ -12,16 +12,23 @@ class UserController {
 
     public function login() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+                header("Location: /login?error=Invalid CSRF token");
+                exit();
+            }
+
             $email = $_POST['user_email'];
             $password = $_POST['user_password'];
 
             $user = $this->user->login($email, $password);
-
+            error_log(print_r($user, true));
             if ($user) {
+
                 if ($user['user_type'] == 'blocked') {
                     header("Location: /login?error=Account is blocked");
                     exit();
                 }
+
                 $_SESSION['user'] = $user;
                 header("Location: /");
                 exit();
@@ -34,6 +41,21 @@ class UserController {
 
     public function logout() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+            // Validate CSRF token
+            $headers = getallheaders();
+            $csrf_token = $headers['X-CSRF-Token'] ?? '';
+            if (!$csrf_token || $csrf_token !== $_SESSION['csrf_token']) {
+                http_response_code(403);
+                echo json_encode(['message' => 'Invalid CSRF token']);
+                exit();
+            }
+
+            if (!isset($_SESSION['user'])) {
+                http_response_code(403);
+                die('Unauthorized');
+            }
+
             session_start();
             session_unset();
             session_destroy();
@@ -44,6 +66,12 @@ class UserController {
 
     public function register() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+            if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+                header("Location: /register?error=Invalid CSRF token");
+                exit();
+            }
+            
             $fullName = $_POST['full-name'];
             $email = $_POST['email'];
             $password = $_POST['password'];
@@ -73,6 +101,15 @@ class UserController {
             $user = $_SESSION['user'];
             $userId = $user['user_id'];
 
+            // Validate CSRF token
+            $headers = getallheaders();
+            $csrf_token = $headers['X-CSRF-Token'] ?? '';
+            if (!$csrf_token || $csrf_token !== $_SESSION['csrf_token']) {
+                http_response_code(403);
+                echo json_encode(['message' => 'Invalid CSRF token']);
+                exit();
+            }
+
             $result = $this->user->deleteAccount($userId);
 
             if ($result) {
@@ -93,6 +130,21 @@ class UserController {
             
             // Decode JSON payload
             $data = json_decode(file_get_contents('php://input'), true);
+
+            // Validate CSRF token
+            $headers = getallheaders();
+            $csrf_token = $headers['X-CSRF-Token'] ?? '';
+
+            if (!$csrf_token || $csrf_token !== $_SESSION['csrf_token']) {
+                http_response_code(403);
+                echo json_encode(['message' => 'Invalid CSRF token']);
+                exit();
+            }
+
+            if (!isset($_SESSION['user'])) {
+                http_response_code(403);
+                die('Unauthorized');
+            }
             
             // Check if userId is set in the decoded data
             if (isset($data['userId'])) {
@@ -123,6 +175,21 @@ class UserController {
             
             // Decode JSON payload
             $data = json_decode(file_get_contents('php://input'), true);
+
+            // Validate CSRF token
+            $headers = getallheaders();
+            $csrf_token = $headers['X-CSRF-Token'] ?? '';
+
+            if (!$csrf_token || $csrf_token !== $_SESSION['csrf_token']) {
+                http_response_code(403);
+                echo json_encode(['message' => 'Invalid CSRF token']);
+                exit();
+            }
+
+            if (!isset($_SESSION['user'])) {
+                http_response_code(403);
+                die('Unauthorized');
+            }
             
             // Check if userId is set in the decoded data
             if (isset($data['userId'])) {

@@ -4,7 +4,6 @@
         header("Location: /login");
         exit();
     }
-    require_once 'db.php';
     require_once 'models/Course.php';
 
     $conn = require 'db.php'; // Get the database connection
@@ -13,6 +12,18 @@
         $coursesObj = new Course($conn);
         $stmt = $coursesObj->getAllCourses();
     }
+
+        // Generate CSRF token if not set
+        if (empty($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
+    
+        $csrf_token = $_SESSION['csrf_token'];
+    
+        // Function to generate CSRF token input field
+        function csrfInput() {
+            return '<input type="hidden" name="csrf_token" value="' . $_SESSION['csrf_token'] . '">';
+        }
 ?>
 
 <!DOCTYPE html>
@@ -28,7 +39,9 @@
                 fetch('/deleteCourse', {
                     method: 'DELETE',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': '<?php echo $csrf_token ?>'
+
                     },
                     body: JSON.stringify({ courseId: courseId })
                 })
@@ -57,7 +70,11 @@
             logoutButton.addEventListener('click', function(e) {
                 e.preventDefault();
                 fetch('/logout', {
-                    method: 'POST'
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': '<?php echo $csrf_token ?>'
+                    }
                 })
                 .then(response => {
                     if (response.ok) {
@@ -158,6 +175,12 @@
                     }
                     echo "</div></div>";
                 } else {
+                    
+                    echo "<div class='flex gap-5 justify-between'>
+                                <button id='user-detail-btn' class='bg-blue-500 text-white p-2 rounded-md shadow-md'>Welcome, " . $_SESSION['user']['user_full_name'] . "</button>
+                                <button id='logout-btn' class='bg-red-500 text-white p-2 rounded-md shadow-md'>Logout</button>
+                          </div>  ";
+                    echo "<button id='new-course-btn' class='bg-green-500 text-white p-2 rounded-md h-fit shadow-md'>Add New Course</button>";
                     echo "<p class='text-center mt-10'>No courses available</p>";
                 }
             } else {

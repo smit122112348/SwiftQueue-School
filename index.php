@@ -1,4 +1,9 @@
 <?php
+    $conn = require './db.php';
+    $seeder = new Seeder($conn);
+    $seeder->makeTables();
+    $seeder->seedDatabase();
+
     $routes = [
         'GET' => [
             '/' => './views/home.php',

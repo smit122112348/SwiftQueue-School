@@ -12,6 +12,17 @@ class CourseController {
 
     public function addCourse() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+            if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+                header("Location: /editCourse?error=Invalid CSRF token");
+                exit();
+            }
+
+            if (!isset($_SESSION['user'])) {
+                http_response_code(403);
+                die('Unauthorized');
+            }
+
             $courseName = $_POST['course-name'];
             $courseDescription = $_POST['course-description'];
             $courseStatus = $_POST['course-status'];
@@ -33,8 +44,27 @@ class CourseController {
     }
 
     public function deleteCourse() {
+
+        
         if ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
+
             $data = json_decode(file_get_contents('php://input'), true);
+
+            // Validate CSRF token
+            $headers = getallheaders();
+            $csrf_token = $headers['X-CSRF-Token'] ?? '';
+
+            if (!$csrf_token || $csrf_token !== $_SESSION['csrf_token']) {
+                http_response_code(403);
+                echo json_encode(['message' => 'Invalid CSRF token']);
+                exit();
+            }
+
+            if (!isset($_SESSION['user'])) {
+                http_response_code(403);
+                die('Unauthorized');
+            }
+
             $courseId = $data['courseId'];
 
             $course = $this->course->deleteCourse($courseId);
@@ -51,6 +81,17 @@ class CourseController {
     
     public function editCourse() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+            if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+                header("Location: /editCourse?error=Invalid CSRF token");
+                exit();
+            }
+
+            if (!isset($_SESSION['user'])) {
+                http_response_code(403);
+                die('Unauthorized');
+            }
+
             $courseId = $_POST['course-id'];
             $courseName = $_POST['course-name'];
             $courseDescription = $_POST['course-description'];

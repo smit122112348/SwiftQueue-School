@@ -4,11 +4,25 @@
         header('Location: /login');
         exit();
     }
+
+    // Generate CSRF token if not set
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+
+    $csrf_token = $_SESSION['csrf_token'];
+
+    // Function to generate CSRF token input field
+    function csrfInput() {
+        return '<input type="hidden" name="csrf_token" value="' . $_SESSION['csrf_token'] . '">';
+    }
+    
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="csrf-token" content="<?= htmlspecialchars($csrf_token) ?>">
     <title>Swiftqueue School</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -16,7 +30,11 @@
             const logoutButton = document.getElementById('logout-btn');
             logoutButton.addEventListener('click', function() {
                 fetch('/logout', {
-                    method: 'POST'
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': '<?php echo $csrf_token ?>'
+                    }
                 })
                 .then(response => {
                     if (response.ok) {
@@ -41,8 +59,8 @@
                 <button id="logout-btn" class="bg-red-500 text-white p-2 rounded-md">Logout</button>
             </div>
             <h2 class="text-2xl font-bold my-5">Add New Course</h2>
-            <form action="/newCourse" method="POST" class="flex flex-col gap-5">
-
+            <form method="POST" action="/newCourse" class="flex flex-col gap-5">
+                <?php echo csrfInput(); ?>
                 <div class="flex flex-col gap-1">
                 <label for="course-name">Course Name:</label>
                 <input type="text" id="course-name" name="course-name" class="p-2 rounded-md border border-gray-300" required>

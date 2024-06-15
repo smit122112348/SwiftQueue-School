@@ -11,6 +11,18 @@ $conn = require 'db.php'; // Get the database connection
 
 $coursesObj = new Course($conn);
 $course = $coursesObj->getCourseDetails($_GET['courseId']);
+
+// Generate CSRF token if not set
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+$csrf_token = $_SESSION['csrf_token'];
+
+// Function to generate CSRF token input field
+function csrfInput() {
+    return '<input type="hidden" name="csrf_token" value="' . $_SESSION['csrf_token'] . '">';
+}
 ?>
 
 <!DOCTYPE html>
@@ -23,7 +35,11 @@ $course = $coursesObj->getCourseDetails($_GET['courseId']);
             const logoutButton = document.getElementById('logout-btn');
             logoutButton.addEventListener('click', function() {
                 fetch('/logout', {
-                    method: 'POST'
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': '<?php echo $csrf_token ?>'
+                    }
                 })
                 .then(response => {
                     if (response.ok) {
@@ -49,7 +65,7 @@ $course = $coursesObj->getCourseDetails($_GET['courseId']);
             </div>
             <h2 class="text-2xl font-bold my-5">Edit Course</h2>
             <form action="/editCourse" method="POST" class="flex flex-col gap-5">
-
+                <?php echo csrfInput(); ?>
                 <input type="hidden" name="_method" value="PUT">
                 <input class="p-2 rounded-md border border-gray-300" type="hidden" name="course-id" value="<?php echo htmlspecialchars($course['course_id']); ?>">
 

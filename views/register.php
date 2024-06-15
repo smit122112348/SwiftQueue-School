@@ -1,3 +1,23 @@
+<?php 
+    session_start();
+    if (isset($_SESSION['user'])) {
+        header("Location: /");
+        exit();
+    }
+
+    // Generate CSRF token if not set
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+
+    $csrf_token = $_SESSION['csrf_token'];
+
+    // Function to generate CSRF token input field
+    function csrfInput() {
+        return '<input type="hidden" name="csrf_token" value="' . $_SESSION['csrf_token'] . '">';
+    }
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,6 +38,7 @@
                 }
             ?>
             <form action="/register" method="POST" class="flex flex-col gap-5">
+                <?php echo csrfInput(); ?>
                 <div class="flex flex-col gap-1">
                     <label for="full-name">Full Name:</label>
                     <input type="text" id="full-name" name="full-name" class="p-2 rounded-md border border-gray-300" required>
