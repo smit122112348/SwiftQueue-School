@@ -1,5 +1,5 @@
 <?php
-
+// This file is used to connect to the database
 // Database connection
 $userName = "smit";
 $password = "smit";

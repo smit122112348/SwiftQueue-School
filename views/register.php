@@ -1,21 +1,22 @@
 <?php 
-    session_start();
-    if (isset($_SESSION['user'])) {
-        header("Location: /");
-        exit();
-    }
+// This is the register User page
+session_start();
+if (isset($_SESSION['user'])) {
+    header("Location: /");
+    exit();
+}
 
-    // Generate CSRF token if not set
-    if (empty($_SESSION['csrf_token'])) {
-        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-    }
+// Generate CSRF token if not set
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 
-    $csrf_token = $_SESSION['csrf_token'];
+$csrf_token = $_SESSION['csrf_token'];
 
-    // Function to generate CSRF token input field
-    function csrfInput() {
-        return '<input type="hidden" name="csrf_token" value="' . $_SESSION['csrf_token'] . '">';
-    }
+// Function to generate CSRF token input field
+function csrfInput() {
+    return '<input type="hidden" name="csrf_token" value="' . $_SESSION['csrf_token'] . '">';
+}
 ?>
 
 <!DOCTYPE html>
@@ -32,11 +33,14 @@
                 <h2 class="text-2xl font-bold">Register</h2>
                 <p>Already have an account? <a href="/login" class="text-blue-500">Login</a></p>
             </div>
+
+            <!-- Check for errors -->
             <?php
                 if (isset($_GET['error'])) {
                     echo "<p class='text-red-500'>" . htmlspecialchars($_GET['error']) . "</p>";
                 }
             ?>
+            
             <form action="/register" method="POST" class="flex flex-col gap-5">
                 <?php echo csrfInput(); ?>
                 <div class="flex flex-col gap-1">

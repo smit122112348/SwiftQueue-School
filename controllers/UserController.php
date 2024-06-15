@@ -1,4 +1,5 @@
 <?php
+// This file is used to handle user-related requests
 session_start();
 require_once dirname(__DIR__) . '/db.php';
 require_once dirname(__DIR__) . '/models/User.php';
@@ -12,6 +13,8 @@ class UserController {
 
     public function login() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+            // Validate CSRF token
             if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
                 header("Location: /login?error=Invalid CSRF token");
                 exit();
@@ -20,10 +23,13 @@ class UserController {
             $email = $_POST['user_email'];
             $password = $_POST['user_password'];
 
+            // Login the user
             $user = $this->user->login($email, $password);
-            error_log(print_r($user, true));
+
+            // Redirect to the home page if the user is logged in successfully
             if ($user) {
 
+                // Check if the user is blocked
                 if ($user['user_type'] == 'blocked') {
                     header("Location: /login?error=Account is blocked");
                     exit();
@@ -51,11 +57,13 @@ class UserController {
                 exit();
             }
 
+            // Check if the user is logged in
             if (!isset($_SESSION['user'])) {
                 http_response_code(403);
                 die('Unauthorized');
             }
 
+            // Logout the user
             session_start();
             session_unset();
             session_destroy();
@@ -67,6 +75,7 @@ class UserController {
     public function register() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
+            // Validate CSRF token
             if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
                 header("Location: /register?error=Invalid CSRF token");
                 exit();
@@ -77,13 +86,16 @@ class UserController {
             $password = $_POST['password'];
             $confirmPassword = $_POST['confirm-password'];
 
+            // Check if the passwords match
             if ($password != $confirmPassword) {
                 header("Location: /register?error=Passwords do not match");
                 exit();
             }
 
+            // Register the user
             $user = $this->user->register($fullName, $email, $password);
 
+            // Redirect to the home page if the user is registered successfully
             if ($user) {
                 $_SESSION['user'] = $user;
                 header("Location: /");
@@ -97,7 +109,8 @@ class UserController {
 
     public function deleteAccount() {
         if ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
-            session_start();
+            
+            // Get the user ID from the session
             $user = $_SESSION['user'];
             $userId = $user['user_id'];
 
@@ -110,8 +123,10 @@ class UserController {
                 exit();
             }
 
+            // Delete the user account
             $result = $this->user->deleteAccount($userId);
 
+            // Redirect to the login page if the account was deleted successfully
             if ($result) {
                 session_unset();
                 session_destroy();
@@ -126,7 +141,6 @@ class UserController {
 
     public function makeAdmin() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            session_start();
             
             // Decode JSON payload
             $data = json_decode(file_get_contents('php://input'), true);
@@ -141,6 +155,7 @@ class UserController {
                 exit();
             }
 
+            // Check if the user is logged in
             if (!isset($_SESSION['user'])) {
                 http_response_code(403);
                 die('Unauthorized');
@@ -151,8 +166,10 @@ class UserController {
                 
                 $userId = $data['userId'];
                                 
+                // Make the user an admin
                 $result = $this->user->makeAdmin($userId);
     
+                // Redirect to the user details page if the user was made an admin successfully
                 if ($result) {
                     $_SESSION['user']['user_type'] = 'admin';
                     header("Location: /userDetails");
@@ -169,10 +186,8 @@ class UserController {
         }
     }
 
-    public function blockUser() {
+    public function userAccess() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            session_start();
-            
             // Decode JSON payload
             $data = json_decode(file_get_contents('php://input'), true);
 
@@ -186,6 +201,7 @@ class UserController {
                 exit();
             }
 
+            // Check if the user is logged in
             if (!isset($_SESSION['user'])) {
                 http_response_code(403);
                 die('Unauthorized');
@@ -196,7 +212,7 @@ class UserController {
                 
                 $userId = $data['userId'];
                 $userType = $data['userType'];
-                $result = $this->user->blockUser($userId, $userType);
+                $result = $this->user->userAccess($userId, $userType);
     
                 if ($result) {
                     header("Location: /userDetails");
@@ -229,7 +245,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && strpos($_SERVER['REQUEST_URI'], 'log
     $controller->deleteAccount();
 } else if ($_SERVER['REQUEST_METHOD'] == 'POST' && strpos($_SERVER['REQUEST_URI'], 'makeAdmin') !== false) {
     $controller->makeAdmin();
-} else if ($_SERVER['REQUEST_METHOD'] == 'POST' && strpos($_SERVER['REQUEST_URI'], 'blockUser') !== false) {
-    $controller->blockUser();
+} else if ($_SERVER['REQUEST_METHOD'] == 'POST' && strpos($_SERVER['REQUEST_URI'], 'userAccess') !== false) {
+    $controller->userAccess();
 }
 ?>

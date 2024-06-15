@@ -1,4 +1,5 @@
 <?php
+// This is the view file for editing a course
 session_start();
 if (!isset($_SESSION['user'])) {
     header("Location: /login");
@@ -11,6 +12,13 @@ $conn = require 'db.php'; // Get the database connection
 
 $coursesObj = new Course($conn);
 $course = $coursesObj->getCourseDetails($_GET['courseId']);
+
+// Check if course exists
+if (!$course) {
+    // Show 404.php
+    include '404.php';
+    exit();
+}
 
 // Generate CSRF token if not set
 if (empty($_SESSION['csrf_token'])) {
@@ -31,28 +39,29 @@ function csrfInput() {
     <title>Swiftqueue School</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const logoutButton = document.getElementById('logout-btn');
-            logoutButton.addEventListener('click', function() {
-                fetch('/logout', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-Token': '<?php echo $csrf_token ?>'
-                    }
-                })
-                .then(response => {
-                    if (response.ok) {
-                        window.location.href = '/login';
-                    } else {
-                        alert('Logout failed');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
+        // function to handle logout
+        function handleLogout(event) {
+            event.preventDefault();
+
+            // Make a POST request to logout the user
+            fetch('/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': '<?php echo $csrf_token ?>' // Add CSRF token to headers
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/login';
+                } else {
+                    alert('Logout failed');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
             });
-        });
+        }
     </script>
 </head>
 <body>
@@ -61,7 +70,7 @@ function csrfInput() {
         <div class="w-2/3 p-5 bg-slate-200 rounded-md shadow-lg">
             <div class="flex justify-between">
                 <a href="/" class="bg-blue-500 text-white p-2 rounded-md">Home</a>
-                <button id="logout-btn" class="bg-red-500 text-white p-2 rounded-md">Logout</button>
+                <button id="logout-btn" class="bg-red-500 text-white p-2 rounded-md" onclick="handleLogout(event)">Logout</button>
             </div>
             <h2 class="text-2xl font-bold my-5">Edit Course</h2>
             <form action="/editCourse" method="POST" class="flex flex-col gap-5">

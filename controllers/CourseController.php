@@ -1,4 +1,5 @@
 <?php
+// This file is used to handle course-related requests
 session_start();
 require_once dirname(__DIR__) . '/db.php';
 require_once dirname(__DIR__) . '/models/Course.php';
@@ -13,11 +14,13 @@ class CourseController {
     public function addCourse() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
+            // Validate CSRF token
             if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
                 header("Location: /editCourse?error=Invalid CSRF token");
                 exit();
             }
 
+            // Check if the user is logged in
             if (!isset($_SESSION['user'])) {
                 http_response_code(403);
                 die('Unauthorized');
@@ -31,8 +34,10 @@ class CourseController {
             $courseEndDate = $_POST['course-end-date'];
             $courseEndTime = $_POST['course-end-time'];
 
+            // Add the course to the database
             $course = $this->course->addCourse($courseName, $courseStatus, $courseDescription, $courseStartDate, $courseStartTime, $courseEndDate, $courseEndTime);
 
+            // Redirect to the home page if the course was added successfully
             if ($course) {
                 header("Location: /");
                 exit();
@@ -43,11 +48,10 @@ class CourseController {
         }
     }
 
-    public function deleteCourse() {
-
-        
+    public function deleteCourse() {        
         if ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
 
+            // Decode the JSON data
             $data = json_decode(file_get_contents('php://input'), true);
 
             // Validate CSRF token
@@ -60,6 +64,7 @@ class CourseController {
                 exit();
             }
 
+            // Check if the user is logged in
             if (!isset($_SESSION['user'])) {
                 http_response_code(403);
                 die('Unauthorized');
@@ -67,8 +72,10 @@ class CourseController {
 
             $courseId = $data['courseId'];
 
+            // Delete the course from the database
             $course = $this->course->deleteCourse($courseId);
 
+            // Return a 204 status code if the course was deleted successfully
             if ($course) {
                 http_response_code(204);
                 exit();
@@ -82,11 +89,13 @@ class CourseController {
     public function editCourse() {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
+            // Validate CSRF token
             if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
                 header("Location: /editCourse?error=Invalid CSRF token");
                 exit();
             }
 
+            // Check if the user is logged in
             if (!isset($_SESSION['user'])) {
                 http_response_code(403);
                 die('Unauthorized');
@@ -101,8 +110,10 @@ class CourseController {
             $courseEndDate = $_POST['course-end-date'];
             $courseEndTime = $_POST['course-end-time'];
 
+            // Edit the course in the database
             $course = $this->course->editCourse($courseId, $courseName, $courseStatus, $courseDescription, $courseStartDate, $courseStartTime, $courseEndDate, $courseEndTime);
 
+            // Redirect to the home page if the course was edited successfully
             if ($course) {
                 header("Location: /");
                 exit();

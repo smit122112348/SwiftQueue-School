@@ -1,53 +1,54 @@
 <?php
-    session_start();
-    if (!isset($_SESSION['user'])) {
-        header('Location: /login');
-        exit();
-    }
+// This is the new course page
+session_start();
+if (!isset($_SESSION['user'])) {
+    header('Location: /login');
+    exit();
+}
 
-    // Generate CSRF token if not set
-    if (empty($_SESSION['csrf_token'])) {
-        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
-    }
+// Generate CSRF token if not set
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 
-    $csrf_token = $_SESSION['csrf_token'];
+$csrf_token = $_SESSION['csrf_token'];
 
-    // Function to generate CSRF token input field
-    function csrfInput() {
-        return '<input type="hidden" name="csrf_token" value="' . $_SESSION['csrf_token'] . '">';
-    }
-    
+// Function to generate CSRF token input field
+function csrfInput() {
+    return '<input type="hidden" name="csrf_token" value="' . $_SESSION['csrf_token'] . '">';
+}
+
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="csrf-token" content="<?= htmlspecialchars($csrf_token) ?>">
     <title>Swiftqueue School</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const logoutButton = document.getElementById('logout-btn');
-            logoutButton.addEventListener('click', function() {
-                fetch('/logout', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-Token': '<?php echo $csrf_token ?>'
-                    }
-                })
-                .then(response => {
-                    if (response.ok) {
-                        window.location.href = '/login';
-                    } else {
-                        alert('Logout failed');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
+        // Function to handle logout
+        function handleLogout(event) {
+            event.preventDefault();
+            
+            // Make a POST request to logout the user
+            fetch('/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': '<?php echo $csrf_token ?>' // Add CSRF token to headers
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/login';
+                } else {
+                    alert('Logout failed');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
             });
-        });
+        }
     </script>
 </head>
 <body>
@@ -56,7 +57,7 @@
         <div class="w-2/3 p-5 bg-slate-200 rounded-md shadow-lg">
             <div class="flex justify-between">
                 <a href="/" class="bg-blue-500 text-white p-2 rounded-md">Home</a>
-                <button id="logout-btn" class="bg-red-500 text-white p-2 rounded-md">Logout</button>
+                <button id="logout-btn" class="bg-red-500 text-white p-2 rounded-md" onclick="handleLogout(event)">Logout</button>
             </div>
             <h2 class="text-2xl font-bold my-5">Add New Course</h2>
             <form method="POST" action="/newCourse" class="flex flex-col gap-5">
