@@ -20,6 +20,16 @@ class User{
         return $users;
     }
 
+    public function getUser($id){
+        // Get a user from the database
+        $query = "SELECT * FROM " . $this->table_name . " WHERE user_id = :user_id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':user_id', $id);
+        $stmt->execute();
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $user;
+    }
+
     public function login($email, $password) {
         // Check if the user exists in the database
         $query = "SELECT * FROM " . $this->table_name . " WHERE user_email = :email LIMIT 0,1";

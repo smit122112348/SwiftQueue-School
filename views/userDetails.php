@@ -29,6 +29,7 @@ $csrf_token = $_SESSION['csrf_token'];
 function csrfInput() {
     return '<input type="hidden" name="csrf_token" value="' . $_SESSION['csrf_token'] . '">';
 }
+
 ?>
 
 <!DOCTYPE html>
@@ -169,12 +170,35 @@ function csrfInput() {
                 console.error('Error:', error);
             });
         }
+
+        // if session success message is set, show it
+        window.onload = function() {
+            let successMessage = "<?= isset($_SESSION['success']) ? $_SESSION['success'] : '' ?>";
+            if (successMessage) {
+                document.querySelector('.success-message').innerText = successMessage;
+                document.querySelector('.success-message').style.display = 'block';
+                console.log(successMessage);
+
+                // Show the success message div for 3 seconds
+                setTimeout(() => {
+                    document.querySelector('.success-message').style.display = 'none';
+                    // Remove the success message from the session
+                    <?php unset($_SESSION['success']); ?>
+                }, 3000);
+            }
+            else{
+                document.querySelector('.success-message').style.display = 'none';
+            }
+        }
     </script>
 </head>
 <body>
     <div class="container mx-auto flex flex-col justify-center items-center gap-5">
         <h1 class="text-4xl font-bold text-center mt-10">Swiftqueue School</h1>
         <div class="w-2/3 p-5 bg-slate-200 rounded-md shadow-lg">
+        <div class='success-message bg-green-500 text-white p-2 rounded-md shadow-md my-5 hidden'>
+                        <!-- Success message will be displayed here -->
+        </div>
             <div class="flex justify-between my-5">
                 <h2 class="text-2xl font-bold">User Details</h2>
                 <div>

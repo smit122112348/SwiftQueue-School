@@ -197,13 +197,15 @@ class UserController {
             if (isset($data['userId'])) {
                 
                 $userId = $data['userId'];
-                                
+                $user = $this->user->getUser($userId);                
                 // Make the user an admin
                 $result = $this->user->makeAdmin($userId);
     
                 // Redirect to the user details page if the user was made an admin successfully
                 if ($result) {
-                    header("Location: /userDetails");
+                    // Set the success message
+                    $_SESSION['success'] = $user['user_full_name'] . ' is now an admin';
+                    http_response_code(204);
                     exit();
                 } else {
                     header("Location: /userDetails?error=Make admin failed");
@@ -243,10 +245,14 @@ class UserController {
                 
                 $userId = $data['userId'];
                 $userType = $data['userType'];
+                $user = $this->user->getUser($userId);
                 $result = $this->user->userAccess($userId, $userType);
     
                 if ($result) {
-                    header("Location: /userDetails");
+                    // Set the success message
+                    $userType = $userType == 'blocked' ? 'basic' : 'blocked';
+                    $_SESSION['success'] = $user['user_full_name'] . ' is now ' . $userType;
+                    http_response_code(204);
                     exit();
                 } else {
                     header("Location: /userDetails?error=Block user failed");
@@ -285,10 +291,13 @@ class UserController {
             if (isset($data['userId'])) {
                 
                 $userId = $data['userId'];
+                $user = $this->user->getUser($userId);
                 $result = $this->user->deleteAccount($userId);
     
                 if ($result) {
-                    header("Location: /userDetails");
+                    // Set the success message
+                    $_SESSION['success'] = $user['user_full_name'] . ' is now deleted';
+                    http_response_code(204);
                     exit();
                 } else {
                     header("Location: /userDetails?error=Delete user failed");
