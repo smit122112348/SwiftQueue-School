@@ -183,7 +183,9 @@ function csrfInput() {
                             <div class='w-full bg-slate-300 rounded-md p-5 shadow-md flex course'>
                                 <div class='flex flex-col flex-1'>
                                     <h3 class='text-xl font-bold'><?= htmlspecialchars($row['course_name']) ?></h3>
-                                    <p><?= htmlspecialchars($row['course_description']) ?></p>
+                                    <?php if ($row['course_description']): ?>
+                                        <p><?= htmlspecialchars($row['course_description']) ?></p>
+                                    <?php endif; ?>
                                     <p>Start Date: <?= htmlspecialchars($row['course_startDate']) ?></p>
                                     <p>End Date: <?= htmlspecialchars($row['course_endDate']) ?></p>
                                 </div>
