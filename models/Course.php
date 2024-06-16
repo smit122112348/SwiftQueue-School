@@ -34,10 +34,14 @@ class Course{
     
         $startDateTime = $startDate . ' ' . $startTime;
         $endDateTime = $endDate . ' ' . $endTime;
-        $descriptionValue = $description ? $description : null;
+        if($description == "0" || !empty($description)){
+            $descriptionValue = $description;
+        }else{
+            $descriptionValue = null;
+        }
     
         $stmt->bindParam(':name', $name);
-        $stmt->bindParam(':description', $descriptionValue);
+        $stmt->bindParam(':description', $descriptionValue, PDO::PARAM_STR); // Explicitly set the data type
         $stmt->bindParam(':status', $status);
         $stmt->bindParam(':startDate', $startDateTime);
         $stmt->bindParam(':endDate', $endDateTime);
@@ -52,7 +56,11 @@ class Course{
     
         $startDateTime = $startDate . ' ' . $startTime;
         $endDateTime = $endDate . ' ' . $endTime;
-        $descriptionValue = $description ? $description : null;
+        if($description == "0" || !empty($description)){
+            $descriptionValue = $description;
+        }else{
+            $descriptionValue = null;
+        }
     
         $stmt->bindParam(':id', $id);
         $stmt->bindParam(':name', $name);

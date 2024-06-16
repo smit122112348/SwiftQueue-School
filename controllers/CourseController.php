@@ -26,8 +26,8 @@ class CourseController {
                 die('Unauthorized');
             }
 
-            $courseName = $_POST['course-name'];
-            $courseDescription = $_POST['course-description'];
+            $courseName = trim($_POST['course-name']);
+            $courseDescription = trim($_POST['course-description']);
             $courseStatus = $_POST['course-status'];
             $courseStartDate = $_POST['course-start-date'];
             $courseStartTime = $_POST['course-start-time'];
