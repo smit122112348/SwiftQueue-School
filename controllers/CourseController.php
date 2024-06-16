@@ -39,6 +39,8 @@ class CourseController {
 
             // Redirect to the home page if the course was added successfully
             if ($course) {
+                // Set the success message
+                $_SESSION['success'] = 'Course added successfully';
                 header("Location: /");
                 exit();
             } else {
@@ -78,6 +80,8 @@ class CourseController {
             // Return a 204 status code if the course was deleted successfully
             if ($course) {
                 http_response_code(204);
+                // Set the success message
+                $_SESSION['success'] = 'Course Deleted successfully';
                 exit();
             } else {
                 http_response_code(500);
@@ -115,6 +119,8 @@ class CourseController {
 
             // Redirect to the home page if the course was edited successfully
             if ($course) {
+                // Set the success message
+                $_SESSION['success'] = 'Course updated successfully';
                 header("Location: /");
                 exit();
             } else {

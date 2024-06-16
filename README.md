@@ -57,10 +57,10 @@ Swiftqueue School is a web application that allows users to manage courses and u
 3. Start the web server:
 
     ```sh
-    php -S localhost:8000
+    php -S localhost:3000
     ```
 
-    You can now access the application at `http://localhost:8000`.
+    You can now access the application at `http://localhost:3000`.
 
 ## Usage
 

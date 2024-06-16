@@ -56,6 +56,8 @@ class UserController {
                 }
 
                 $_SESSION['user'] = $user;
+                // Set the success message
+                $_SESSION['success'] = 'Logged in successfully';
                 header("Location: /");
                 exit();
             } else {
@@ -126,6 +128,8 @@ class UserController {
             // Redirect to the home page if the user is registered successfully
             if ($user) {
                 $_SESSION['user'] = $user;
+                // Set the success message
+                $_SESSION['success'] = 'Registered successfully';
                 header("Location: /");
                 exit();
             } else {
@@ -199,7 +203,6 @@ class UserController {
     
                 // Redirect to the user details page if the user was made an admin successfully
                 if ($result) {
-                    $_SESSION['user']['user_type'] = 'admin';
                     header("Location: /userDetails");
                     exit();
                 } else {

@@ -5,6 +5,7 @@ if (!isset($_SESSION['user'])) {
     header("Location: /login");
     exit();
 }
+
 require_once 'models/Course.php';
 $config = require 'config.php';
 $conn = require 'db.php'; // Get the database connection
@@ -128,6 +129,25 @@ function csrfInput() {
             }
         }
 
+        // if session success message is set, show it
+        window.onload = function() {
+            let successMessage = "<?= isset($_SESSION['success']) ? $_SESSION['success'] : '' ?>";
+            if (successMessage) {
+                document.querySelector('.success-message').innerText = successMessage;
+                document.querySelector('.success-message').style.display = 'block';
+
+                // Show the success message div for 3 seconds
+                setTimeout(() => {
+                    document.querySelector('.success-message').style.display = 'none';
+                    // Remove the success message from the session
+                    <?php unset($_SESSION['success']); ?>
+                }, 3000);
+            }
+            else{
+                document.querySelector('.success-message').style.display = 'none';
+            }
+        }
+
 
     </script>
 </head>
@@ -141,6 +161,9 @@ function csrfInput() {
             <?php if ($stmt->rowCount() > 0): ?>
 
                 <div class='w-2/3 p-5 bg-slate-200 rounded-md shadow-lg'>
+                    <div class='success-message bg-green-500 text-white p-2 rounded-md shadow-md my-5 hidden'>
+                        <!-- Success message will be displayed here -->
+                    </div>
                     <div class='flex gap-5 justify-between'>
                         <a href='/userDetails' class='bg-blue-500 text-white p-2 rounded-md shadow-md'>Welcome, <?= $_SESSION['user']['user_full_name'] ?></a>
                         <button id='logout-btn' class='bg-red-500 text-white p-2 rounded-md shadow-md' onclick="handleLogout(event)">Logout</button>
