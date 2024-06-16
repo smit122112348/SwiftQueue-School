@@ -120,6 +120,11 @@ function csrfInput() {
         // Function to handle delete account
         function handleDeleteAccount(event) {
             event.preventDefault();
+
+            // Confirm before deleting the user
+            if (!confirm('Are you sure you want to delete your account?')) {
+                return;
+            }
             
             // Make a DELETE request to delete the account
             fetch('/deleteAccount', {

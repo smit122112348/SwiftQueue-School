@@ -62,6 +62,12 @@ Swiftqueue School is a web application that allows users to manage courses and u
 
     You can now access the application at `http://localhost:3000`.
 
+4. Initial Users:
+    ```sh
+    admin@admin.com : Admin@admin1
+    123@gmail.com : Basic@basic1
+    ```
+
 ## Usage
 
 1. **Register and Login:**
