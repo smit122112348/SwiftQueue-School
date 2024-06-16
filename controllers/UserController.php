@@ -40,8 +40,8 @@ class UserController {
                 exit();
             }
 
-            $email = $_POST['user_email'];
-            $password = $_POST['user_password'];
+            $email = trim($_POST['user_email']);
+            $password = trim($_POST['user_password']);
 
             // Login the user
             $user = $this->user->login($email, $password);
@@ -103,10 +103,10 @@ class UserController {
                 exit();
             }
             
-            $fullName = $_POST['full-name'];
-            $email = $_POST['email'];
-            $password = $_POST['password'];
-            $confirmPassword = $_POST['confirm-password'];
+            $fullName = trim($_POST['full-name']);
+            $email = trim($_POST['email']);
+            $password = trim($_POST['password']);
+            $confirmPassword = trim($_POST['confirm-password']);
 
             // Check if the password is at least 8 characters long, contains a number, a special character, a small letter ,and a capital letter
             $errors = $this->validatePassword($password);

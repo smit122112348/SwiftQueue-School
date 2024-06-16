@@ -106,8 +106,8 @@ class CourseController {
             }
 
             $courseId = $_POST['course-id'];
-            $courseName = $_POST['course-name'];
-            $courseDescription = $_POST['course-description'];
+            $courseName = trim($_POST['course-name']);
+            $courseDescription = trim($_POST['description']);
             $courseStatus = $_POST['course-status'];
             $courseStartDate = $_POST['course-start-date'];
             $courseStartTime = $_POST['course-start-time'];
