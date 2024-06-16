@@ -88,6 +88,9 @@ Swiftqueue School is a web application that allows users to manage courses and u
     - Can delete their own account
     - View their own details (name, email, type). 
 
+5. **Initial Users and Courses**
+    - These are added automatically in the occassion of Database not present or table not present.    
+
 
 ## Folder Structure
 ```

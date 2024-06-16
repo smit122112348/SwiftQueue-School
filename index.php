@@ -8,12 +8,39 @@ require 'cors.php';
 
 require './Seeder.php';
 
-// Create a new Seeder object and seed the database
 $conn = require './db.php';
+$config = require './config.php';
+
+// Check if the database exists
+$dbCheckQuery = $conn->query("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '" . $config['DB_NAME'] . "'");
+$dbExists = $dbCheckQuery->fetchColumn();
+$dbCheckQuery->closeCursor(); // Close the cursor to free up the connection for the next query
 $seeder = new Seeder($conn);
-$seeder->createDatabase();
-$seeder->makeTables();
-$seeder->seedDatabase();
+if ($dbExists === false) {
+    // Create the database since it does not exist
+    $seeder->createDatabase();
+    $conn->exec("USE " . $config['DB_NAME']);
+    
+    // This runs only once to create the database and tables
+    
+    $seeder->makeTables();
+    $seeder->seedDatabase();
+} else {
+    // Use the database
+    $conn->exec("USE " . $config['DB_NAME']);
+
+    // Check if the 'users' table exists
+    $checkQuery = $conn->query("SHOW TABLES LIKE 'users'");
+    $tableExists = $checkQuery->fetchColumn();
+    $checkQuery->closeCursor(); // Close the cursor to free up the connection for the next query
+
+    if ($tableExists === false) {
+        // This runs only once to create the tables and seed the database if the tables do not exist
+        $seeder->makeTables();
+        $seeder->seedDatabase();
+    }
+}
+
 
 $user_controller = './controllers/UserController.php';
 $course_controller = './controllers/CourseController.php';

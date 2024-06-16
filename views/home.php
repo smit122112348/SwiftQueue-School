@@ -193,7 +193,7 @@ function csrfInput() {
                                     <p class='font-bold <?= $row['course_status'] === "Active" ? "text-green-500 active" : "text-red-500 inactive" ?>'><?= htmlspecialchars($row['course_status']) ?></p>
                                     <div class='flex flex-col gap-1 items-end'>
                                         <a href='/editCourse?courseId=<?= $row['course_id'] ?>' class='bg-yellow-500 text-white p-2 rounded-md w-fit shadow-md'>Edit</a>
-                                        <button class='bg-red-500 text-white p-2 rounded-md mt-2 w-fit shadow-md' onclick='handleDelete(event, <?= $row['course_id'] ?>, "<?= addslashes($row['course_name']) ?>")'>Delete</button>
+                                        <button class='bg-red-500 text-white p-2 rounded-md mt-2 w-fit shadow-md' onclick="handleDelete(event, <?= $row['course_id'] ?>, '<?= addslashes($row['course_name']) ?>')">Delete</button>
                                     </div>
                                 </div>
                             </div>
@@ -206,10 +206,10 @@ function csrfInput() {
             <?php else: ?>
 
                 <div class='flex gap-5 justify-between'>
-                    <button id='user-detail-btn' class='bg-blue-500 text-white p-2 rounded-md shadow-md'>Welcome, <?= $_SESSION['user']['user_full_name'] ?></button>
-                    <button id='logout-btn' class='bg-red-500 text-white p-2 rounded-md shadow-md'>Logout</button>
+                <a href='/userDetails' class='bg-blue-500 text-white p-2 rounded-md shadow-md'>Welcome, <?= $_SESSION['user']['user_full_name'] ?></a>
+                    <button id='logout-btn' class='bg-red-500 text-white p-2 rounded-md shadow-md' onclick="handleLogout(event)">Logout</button>
                 </div>
-                <button id='new-course-btn' class='bg-green-500 text-white p-2 rounded-md h-fit shadow-md'>Add New Course</button>
+                <a href='/newCourse' class='bg-green-500 text-white p-2 rounded-md h-fit shadow-md'>Add New Course</a>
                 <p class='text-center mt-10'>No courses available</p>
 
             <?php endif; ?>
