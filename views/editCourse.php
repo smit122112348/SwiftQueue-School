@@ -85,7 +85,9 @@ function csrfInput() {
 
                 <div class="flex flex-col gap-1">
                     <label for="description">Description</label>
-                    <textarea name="course-description" id="description" class="p-2 rounded-md border border-gray-300"><?php echo htmlspecialchars($course['course_description']); ?></textarea>
+                    <textarea name="course-description" id="description" class="p-2 rounded-md border border-gray-300">
+                        <?php if (isset($course['course_description'])) echo htmlspecialchars($course['course_description']); ?>
+                    </textarea>
                 </div>
 
                 <div class="flex gap-1">
