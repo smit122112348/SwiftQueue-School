@@ -1,6 +1,6 @@
 <?php
 // This is the new course page
-session_start();
+@session_start();
 if (!isset($_SESSION['user'])) {
     header('Location: /login');
     exit();

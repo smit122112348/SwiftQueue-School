@@ -5,36 +5,39 @@
     // Create a new Seeder object and seed the database
     $conn = require './db.php';
     $seeder = new Seeder($conn);
+    $seeder->createDatabase();
     $seeder->makeTables();
     $seeder->seedDatabase();
 
+    $user_controller = './controllers/UserController.php';
+    $course_controller = './controllers/CourseController.php';
     // Route the request to the appropriate file
     $routes = [
         'GET' => [
-            '/' => './views/home.php',
-            '/login' => './views/login.php',
-            '/register' => './views/register.php',
-            '/newCourse' => './views/newCourse.php',
-            '/editCourse' => './views/editCourse.php',
-            '/userDetails' => './views/userDetails.php',
+            '/' => $course_controller,
+            '/login' => $user_controller,
+            '/register' => $user_controller,
+            '/newCourse' => $course_controller,
+            '/editCourse' => $course_controller,
+            '/userDetails' => $user_controller,
         ],
         'POST' => [
-            '/login' => './controllers/UserController.php',
-            '/logout' => './controllers/UserController.php',
-            '/newCourse' => './controllers/CourseController.php',
-            '/register' => './controllers/UserController.php',
-            '/makeAdmin' => './controllers/UserController.php',
-            '/userAccess' => './controllers/UserController.php',
+            '/login' => $user_controller,
+            '/logout' => $user_controller,
+            '/newCourse' => $course_controller,
+            '/register' => $user_controller,
+            '/makeAdmin' => $user_controller,
+            '/userAccess' => $user_controller,
         ],
         'PUT' => [
-            '/editCourse' => './controllers/CourseController.php',
+            '/editCourse' => $course_controller,
         ],
         'DELETE' => [
-            '/deleteCourse' => './controllers/CourseController.php',
-            '/deleteAccount' => './controllers/UserController.php',
+            '/deleteCourse' => $course_controller,
+            '/deleteAccount' => $user_controller,
+            '/deleteUser' => $user_controller
         ]
     ];
-    
     // Get the request method and path
     $requestMethod = $_SERVER['REQUEST_METHOD'];
 

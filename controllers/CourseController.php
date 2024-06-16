@@ -1,14 +1,14 @@
 <?php
 // This file is used to handle course-related requests
 session_start();
-require_once dirname(__DIR__) . '/db.php';
 require_once dirname(__DIR__) . '/models/Course.php';
+$config = require dirname(__DIR__) . '/config.php';
 
 class CourseController {
     private $course;
 
-    public function __construct($db) {
-        $this->course = new Course($db);
+    public function __construct($con, $db) {
+        $this->course = new Course($con, $db);
     }
 
     public function addCourse() {
@@ -126,7 +126,7 @@ class CourseController {
 }
 
 $conn = require dirname(__DIR__) . '/db.php';
-$controller = new CourseController($conn);
+$controller = new CourseController($conn, $config['DB_NAME']);
 
 // Determine which function to call based on the request
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && strpos($_SERVER['REQUEST_URI'], 'newCourse') !== false) {
@@ -135,4 +135,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && strpos($_SERVER['REQUEST_URI'], 'new
     $controller->deleteCourse();
 } else if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['_method']) && $_POST['_method'] === 'PUT') {
     $controller->editCourse();
+} else if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($_SERVER['REQUEST_URI'] === '/') !== false) {
+    include dirname(__DIR__) . '/views/home.php';
+} else if ($_SERVER['REQUEST_METHOD'] === 'GET' && strpos($_SERVER['REQUEST_URI'], 'newCourse') !== false) {
+    include dirname(__DIR__) . '/views/newCourse.php';
+} else if ($_SERVER['REQUEST_METHOD'] === 'GET' && strpos($_SERVER['REQUEST_URI'], 'editCourse') !== false) {
+    include dirname(__DIR__) . '/views/editCourse.php';
 }

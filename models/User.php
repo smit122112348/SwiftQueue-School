@@ -5,9 +5,10 @@ class User{
     private $conn;
     private $table_name = "users";
     
-    public function __construct($db){
+    public function __construct($con,$db){
         // Set the database connection for the model
-        $this->conn = $db;
+        $this->conn = $con;
+        $this->conn->exec("USE $db;");
     }
 
     public function getAllUsers(){

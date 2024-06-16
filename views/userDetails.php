@@ -2,18 +2,18 @@
 // This is the view file for user details
 
 // Check if the user is logged in
-session_start();
+@session_start();
 if (!isset($_SESSION['user'])) {
     header("Location: /login");
     exit();
 }
 require_once 'models/User.php';
-
+$config = require 'config.php';
 $conn = require 'db.php'; // Get the database connection
 
 // Get all users
 if ($conn) {
-    $userObj = new User($conn);
+    $userObj = new User($conn, $config['DB_NAME']);
     $users = $userObj->getAllUsers();
 }
 
@@ -40,6 +40,11 @@ function csrfInput() {
         // Function to handle making a user admin
         function handleMakeAdmin(event, userId) {
             event.preventDefault();
+
+            // confirm before making the user admin
+            if (!confirm('Are you sure you want to make this user an admin?')) {
+                return;
+            }
             
             // Make a POST request to make the user as admin
             fetch('/makeAdmin', {
@@ -134,6 +139,36 @@ function csrfInput() {
                 console.error('Error:', error);
             });
         }
+
+        // Function to handle delete user
+        function handleDeleteUser(event, userId) {
+            event.preventDefault();
+            
+            // Confirm before deleting the user
+            if (!confirm('Are you sure you want to delete this user?')) {
+                return;
+            }
+
+            // Make a DELETE request to delete the user
+            fetch('/deleteUser', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': '<?php echo $csrf_token ?>' // Add CSRF token to headers
+                },
+                body: JSON.stringify({ userId: userId })
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    alert('Delete user failed');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
     </script>
 </head>
 <body>
@@ -189,12 +224,13 @@ function csrfInput() {
                                 <?php if ($user['user_type'] !== 'admin'): ?>
 
                                     <button id="make-admin-btn" class="bg-blue-500 text-white p-2 rounded-md" onclick="handleMakeAdmin(event, <?= $user['user_id'] ?>)">Make Admin</button>
-                                    <button id="block-user-btn" class="bg-red-500 text-white p-2 rounded-md" onclick="handleUserAccess(event, <?= $user['user_id'] ?>, '<?= htmlspecialchars($user['user_type']) ?>')">
+                                    <button id="block-user-btn" class="bg-yellow-500 text-white p-2 rounded-md" onclick="handleUserAccess(event, <?= $user['user_id'] ?>, '<?= htmlspecialchars($user['user_type']) ?>')">
                                         
                                         <!-- Set Button Text according to the user type -->
                                         <?php echo $user['user_type'] === 'blocked' ? 'Unblock' : 'Block'; ?>
                                     
                                     </button>
+                                    <button id="delete-user-btn" class="bg-red-500 text-white p-2 rounded-md" onclick="handleDeleteUser(event, <?= $user['user_id']?>)">Delete this User</button>
 
                                 <?php endif; ?>
 

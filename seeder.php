@@ -13,6 +13,13 @@ class Seeder{
         $this->seedCourses();
     }
 
+    public function createDatabase(){
+        // Create the database if it does not exist
+        $sql = "CREATE DATABASE IF NOT EXISTS swiftQueue_school_db";
+        $this->conn->exec($sql);
+        $this->conn->exec("USE swiftQueue_school_db");
+    }
+
     public function makeTables(){
         // Create the users table if it does not exist
         $sql = "CREATE TABLE IF NOT EXISTS users (
@@ -45,12 +52,12 @@ class Seeder{
         }
         else{
         // Insert initial data into the users table
-        $password = crypt('admin', 'some_salt_30');
+        $password = crypt('Admin@admin1', 'some_salt_30');
         $sql = "INSERT INTO users (user_full_name, user_email, user_password, user_type) 
                 VALUES ('John Doe','admin@admin.com', '$password', 'admin')";
         $this->conn->exec($sql);
 
-        $password = crypt('teacher', 'some_salt_30');
+        $password = crypt('Basic@basic1', 'some_salt_30');
         $sql = "INSERT INTO users (user_full_name, user_email, user_password, user_type)
                 VALUES ('Alice White','123@gmail.com', '$password', 'basic')";
         $this->conn->exec($sql);

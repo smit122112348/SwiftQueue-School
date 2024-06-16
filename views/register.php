@@ -1,6 +1,6 @@
 <?php 
 // This is the register User page
-session_start();
+@session_start();
 if (isset($_SESSION['user'])) {
     header("Location: /");
     exit();

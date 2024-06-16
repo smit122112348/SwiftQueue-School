@@ -1,16 +1,16 @@
 <?php
 // This is the home page
-session_start();
+@session_start();
 if (!isset($_SESSION['user'])) {
     header("Location: /login");
     exit();
 }
 require_once 'models/Course.php';
-
+$config = require 'config.php';
 $conn = require 'db.php'; // Get the database connection
 
 if ($conn) {
-    $coursesObj = new Course($conn);
+    $coursesObj = new Course($conn, $config['DB_NAME']);
     $stmt = $coursesObj->getAllCourses();
 }
 

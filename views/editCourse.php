@@ -1,16 +1,16 @@
 <?php
 // This is the view file for editing a course
-session_start();
+@session_start();
 if (!isset($_SESSION['user'])) {
     header("Location: /login");
     exit();
 }
-require_once 'db.php';
+$config = require 'config.php';
 require_once 'models/Course.php';
 
 $conn = require 'db.php'; // Get the database connection
 
-$coursesObj = new Course($conn);
+$coursesObj = new Course($conn, $config['DB_NAME']);
 $course = $coursesObj->getCourseDetails($_GET['courseId']);
 
 // Check if course exists
