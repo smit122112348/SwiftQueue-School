@@ -1,6 +1,6 @@
 <?php
 // This file is used to handle course-related requests
-session_start();
+@session_start();
 require_once dirname(__DIR__) . '/models/Course.php';
 $config = require dirname(__DIR__) . '/config.php';
 

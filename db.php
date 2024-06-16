@@ -1,9 +1,10 @@
 <?php
 // This file is used to connect to the database
 // Database connection
-$userName = "smit";
-$password = "smit";
-$server = 'localhost:3309';
+$config = require 'config.php';
+$userName = $config['DB_USER'];
+$password = $config['DB_PASS'];
+$server = $config['DB_HOST'];
 
 try {
     // Create connection
